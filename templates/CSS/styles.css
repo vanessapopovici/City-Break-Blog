@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+*{
+	font-family: 'Oswald', sans-serif;
+}
+.fakeimg {
+	height: auto;
+	background: #aaa;
+}
+.fakeimg img{
+	max-width:100%;
+	max-height:100%;
+}
+.carousel-inner img {
+    width: 100%;
+    height: 100%;
+}
+.pictureimg{
+	max-width:100%;
+	max-height:100%;
+}
+.pic_container {
+	position: relative;
+	width: 100%;
+	margin: 0 auto;
+}
+
+.pic_container img {vertical-align: middle;}
+
+.pic_container .pic_content {
+	position: absolute;
+	bottom: 0;
+	background: rgb(0, 0, 0); /* Fallback color */
+	background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+	color: #f1f1f1;
+	width: 100%;
+	padding: 20px 0px 20px 20px;
+}
+/* Stilizarea de bază a butoanelor din meniul vertical */
+.nav-pills .nav-link {
+    border: 1px solid #007bff; /* Border subțire albastru */
+    border-radius: 5px;        /* Colțuri ușor rotunjite */
+    margin-bottom: 10px;       /* Spațiu între butoane */
+    transition: all 0.3s;      /* Tranziție fină pentru efectul de hover */
+	width: 250px;
+}
+.nav-pills .nav-link:hover {
+    background-color: #007bff; /* Albastrul specific Bootstrap */
+    color: white;
+}

@@ -1,0 +1,52 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4">Gestionare Utilizatori (Modul Admin)</h2>
+
+    <div class="card shadow-sm" style="border-radius: 8px;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="min-width: 600px;">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th style="width: 80px; padding: 15px;">Avatar</th>
+                        <th>Nume Utilizator</th>
+                        <th>Descriere Scurtă</th>
+                        <th class="text-center" style="width: 120px;">Acțiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in result_users %}
+                        <tr>
+                            <td style="padding: 12px;">
+                                {% if u.user_image and u.user_image|trim != '' and u.user_image != 'user_image.jpg' %}
+                                    <img src="templates/pictures/users/{{ u.user_image }}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd; display: block; margin: auto;">
+                                {% else %}
+                                    <div style="width: 45px; height: 45px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #777; font-weight: bold; font-size: 1.2em; margin: auto;">
+                                        {{ u.user|slice(0, 1)|upper }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight: 500; font-size: 1.1em; color: #333;">{{ u.user }}</td>
+                            <td class="text-muted" style="font-size: 0.95em;">
+                                {{ u.user_short_description ? u.user_short_description : '---' }}
+                            </td>
+                            <td class="text-center">
+                                <a href="delete_user.php?id={{ u.id }}" class="btn btn-sm btn-danger" style="border-radius: 4px; font-weight: 500;" onclick="return confirm('Ești sigur că vrei să ștergi definitiv acest utilizator? Toate articolele și comentariile lui vor fi șterse AUTOMAT!');">
+                                    Șterge
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted p-4">
+                                Nu există alți utilizatori înregistrați în sistem.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

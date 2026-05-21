@@ -1,0 +1,50 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow" style="width: 100%; max-width: 900px; margin: 0 auto; border-radius: 12px; border: none;">
+        <div class="card-header bg-dark text-white" style="border-radius: 12px 12px 0 0; padding: 20px;">
+            <h3 class="mb-0">Adaugă o nouă destinație (Oraș)</h3>
+        </div>
+        <div class="card-body" style="padding: 40px;">
+        
+        <form action="new_gallery.php" method="POST" enctype="multipart/form-data">
+            
+            <div class="form-group mb-4">
+                <label style="font-weight: bold; font-size: 1.1em;">Numele destinației (Titlu):</label>
+                <input type="text" class="form-control form-control-lg" name="title" placeholder="Ex: Paris, Franța" style="width: 100%; max-width: 100%;" required>
+            </div>
+
+            <div class="form-group mb-4">
+                <label style="font-weight: bold; font-size: 1.1em;">Scurtă descriere (Subtitlu):</label>
+                <input type="text" class="form-control form-control-lg" name="title_description" placeholder="Ex: Orașul iubirii și al luminilor" style="width: 100%; max-width: 100%;" required>
+            </div>
+
+            <div class="form-group mb-4">
+                <label style="font-weight: bold; font-size: 1.1em;">Descriere detaliată:</label>
+                <textarea class="form-control form-control-lg" name="long_description" rows="5" placeholder="Scrie o descriere atractivă a orașului..." required></textarea>
+            </div>
+
+            <div class="form-group mb-5">
+                <label style="font-weight: bold; font-size: 1.1em;">Imagine principală (Cover):</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="gallery_image" name="gallery_image" accept="image/*" required>
+                    <label class="custom-file-label" for="gallery_image">Alege o imagine reprezentativă...</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" style="font-size: 1.2em; padding: 15px;">Adaugă orașul</button>
+        </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script pentru a afișa numele imaginii selectate în input
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>
+{% endblock %}

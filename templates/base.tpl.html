@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ pagetitle }}</title>
+    {{ include('bootstrap.tpl.html') }}
+    <link rel="stylesheet" href="templates/CSS/styles.css">
+    <link rel="stylesheet" href="templates/CSS/login.css">
+    <script>
+	function addFields(){
+		if( typeof addFields.counter == 'undefined' ) {
+			addFields.counter = 0;
+		}
+		//addFields.counter++;
+		input_container.appendChild(document.createTextNode("Imaginea" + addFields.counter +": "));
+		var input = document.createElement("input");
+		input.type = "file";
+		input.accept = "image/*";
+		input.name = "Imagini[" + addFields.counter +"]";
+		input_container.appendChild(input);
+		input = document.createElement("input");
+		input.type = "text";
+		input.name="Short_description[" + addFields.counter +"]";
+		input_container.appendChild(input);
+		
+		// Append a line break 
+		input_container.appendChild(document.createElement("br"));
+		addFields.counter++;
+	}
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div id="navbarCollapse" class="collapse navbar-collapse">
+
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a href="index.php" class="nav-link {% if active_page == 'home' or active_page is not defined %}active{% endif %}">Acasă</a>
+            </li>
+                        {% if user_id == 1 %}
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'manage_cities' %}active{% endif %}" href="manage_cities.php">Toate Orașele</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+				{% if user_name != '' %}
+            <a class="nav-link {% if active_page == 'manage' %}active{% endif %}" href="manage_galleries.php">
+            {{ user_id == 1 ? 'Toate Articolele' : 'Articolele Mele' }}
+            </a>
+        {% endif %}
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+				{% if user_name == '' %}
+					User
+				{% else %}
+					{{ user_name }}
+				{% endif %}
+				</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    {% if user_name != '' %}
+                        <a href="profile.php" class="dropdown-item font-weight-bold">Profilul Meu</a>
+						<a href="new_article_form.php" class="dropdown-item">Articol Nou</a>
+					{% endif %}
+                    <a href="{{ user_name == '' ? 'signup_form.php' : 'settings.php' }}" class="dropdown-item">
+						{{ user_name == '' ? 'Sign up' : 'Setări' }}						
+					</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ user_name == '' ? 'login_form.php' : 'logout.php' }}"class="dropdown-item">
+						{{ user_name == '' ? 'Log in' : 'Log out' }}
+					</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container" style="margin-top:30px">
+    <div class="row">
+    <div class="col-sm-4">
+{% if user_name == '' %}
+			<h2>About Me</h2>
+			<h5>Photo of me:</h5>
+            <div class="fakeimg" style="height:200px; width:200px; border-radius: 50%; overflow: hidden; margin-bottom: 15px; border: 3px solid #f8f9fa; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <img src="templates/pictures/users/{{ user_image }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+			<p>{{ user_description }}</p>
+		{% else %}
+			<h2>About {{ user_name }}:</h2>
+			<h5>Photo of me:</h5>
+            
+            {% if user_image and user_image|trim != '' and user_image != 'default.png' and user_image != 'default.jpg' and user_image != 'avatar.png' and user_image != 'user_image.jpg' %}
+    			<div class="fakeimg" style="height:200px; width:200px; border-radius: 50%; overflow: hidden; margin-bottom: 15px; border: 3px solid #f8f9fa; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <img src="templates/pictures/users/{{ user_image }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            {% else %}
+                <div style="width: 200px; height: 200px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 6em; font-weight: bold; color: #666; margin-bottom: 15px; border: 3px solid #f8f9fa; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    {{ user_name|slice(0, 1)|upper }}
+                </div>
+            {% endif %}
+            
+			<p>{{ user_description }}</p>
+		{% endif %}
+
+        {% if user_id == 1%}
+        <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="new_gallery_form.php" style="border-radius: 5px; text-align: left;">Adaugă oraș nou</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="new_article_form.php" style="border-radius: 5px; text-align: left;">Adaugă un articol nou</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="manage_users.php" style="border-radius: 5px; text-align: left;">Gestionarea Utilizatorilor</a>
+        </li>
+        </ul>
+	    {% endif %}
+
+        <hr class="d-sm-none">
+    </div>
+	<div class="col-sm-8">
+		{% block content %}{% endblock %}
+	</div>
+    </div>
+</div>
+
+<footer class="bg-dark text-light pt-5 pb-4 mt-5">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase font-weight-bold mb-3 text-white">City Break Blog</h5>
+                <p class="small" style="color: #bbb;">
+                    Descoperă cele mai frumoase destinații de vacanță, citește experiențele altor călători și împărtășește propriile tale aventuri din explorările urbane.
+                </p>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase font-weight-bold mb-3 text-white">Link-uri Utile</h5>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="index.php" style="color: #bbb; text-decoration: none;">Acasă</a></li>
+                    
+                    {% if user_name != '' %}
+                        <li class="mb-2"><a href="manage_galleries.php" style="color: #bbb; text-decoration: none;">Articolele mele</a></li>
+                        <li class="mb-2"><a href="settings.php" style="color: #bbb; text-decoration: none;">Setări profil</a></li>
+                    {% else %}
+                        <li class="mb-2"><a href="login_form.php" style="color: #bbb; text-decoration: none;">Autentificare</a></li>
+                        <li class="mb-2"><a href="signup_form.php" style="color: #bbb; text-decoration: none;">Creează cont</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase font-weight-bold mb-3 text-white">Contact</h5>
+                <ul class="list-unstyled small" style="color: #bbb;">
+                    <li class="mb-2">✉ contact@citybreakblog.ro</li>
+                    <li class="mb-3">☎ +40 123 456 789</li>
+                    <li>
+                        <a href="#" style="color: #bbb; text-decoration: none; margin-right: 15px;">Facebook</a>
+                        <a href="#" style="color: #bbb; text-decoration: none; margin-right: 15px;">Instagram</a>
+                        <a href="#" style="color: #bbb; text-decoration: none;">Twitter</a>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+        
+        <hr style="background-color: #444; margin-top: 10px; margin-bottom: 20px;">
+        
+        <div class="row">
+            <div class="col-12 text-center small" style="color: #888;">
+                &copy; {{ "now"|date("Y") }} City Break Blog. Toate drepturile rezervate.
+            </div>
+        </div>
+    </div>
+</footer>

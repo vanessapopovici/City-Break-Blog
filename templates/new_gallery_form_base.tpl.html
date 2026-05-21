@@ -1,0 +1,53 @@
+{% extends "base.tpl.html" %}
+
+
+{% block content %}
+    <h1>
+    {% for record in result_g %}
+        {{ record.title }}
+    {% endfor %}
+    </h1><br>
+    {% for record in result_p %}
+        <div class="pic_container">
+            <img class="pictureimg" src="templates/pictures/{{ record.picture }}"></img>
+            <div class="pic_content">
+                <h5>{{ record.short_title_description }}</h5>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+
+
+    <hr>
+
+
+    <h4>Comentarii</h4>
+
+
+    {% for comment in comments %}
+        <div style="border: 1px solid #dce8f1; border-radius: 8px; padding: 15px; margin-bottom: 10px; background: #f9f9f9;">
+            <strong>{{ comment.user }}</strong>
+            <span class="text-muted" style="font-size: 0.85em; margin-left: 10px;">{{ comment.post_date|date("d.m.Y H:i") }}</span>
+            <p style="margin-top: 8px; margin-bottom: 0;">{{ comment.content }}</p>
+        </div>
+    {% else %}
+        <p class="text-muted">Nu există comentarii încă. Fii primul!</p>
+    {% endfor %}
+
+
+    <hr>
+
+
+    {% if user_name != '' %}
+        <h5>Adaugă un comentariu</h5>
+        <form action="show_gallery.php?id={{ result_g[0].id }}" method="POST">
+            <div style="margin-bottom: 10px;">
+                <textarea name="content" rows="4" style="width: 85%; padding: 10px; border: 2px solid #f6f6f6; border-radius: 5px; font-size: 15px; resize: vertical;" placeholder="Scrie comentariul tău..."></textarea>
+            </div>
+            <input type="submit" value="Trimite comentariul">
+        </form>
+    {% else %}
+        <p>Trebuie să fii <a href="login_form.php">autentificat</a> pentru a lăsa un comentariu.</p>
+    {% endif %}
+{% endblock %}
+

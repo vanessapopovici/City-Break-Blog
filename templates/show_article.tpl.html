@@ -1,0 +1,156 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+    <h1 class="my-3">{{ article.title }}</h1>
+    
+    <p class="text-muted" style="font-size: 0.95em;">
+    Postat de 
+    <a href="profile.php?id={{ article.id_user }}" style="font-weight: bold; color: #007bff; text-decoration: none;">
+        {{ article.user }}
+    </a> 
+    la data de {{ article.post_date|date("d.m.Y H:i") }}
+    </p>
+
+    <p style="font-size: 1.15em; line-height: 1.6; text-align: justify; white-space: pre-line;">
+        {{ article.content }}
+    </p>
+
+    {% if images is not empty %}
+        <div class="row">
+            {% for img in images %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <img src="templates/pictures/{{ img }}" class="card-img-top img-fluid" alt="Imagine articol">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <hr class="my-5">
+
+    <h3>Comentarii ({{ comments|length }})</h3>
+
+    <div class="comments-section mt-3">
+    {% for comment in comments %}
+        <div style="position: relative; border: 1px solid #eaeaea; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fdfdfd;">
+            
+            <div class="d-flex align-items-center mb-2">
+                <a href="profile.php?id={{ comment.id_user }}" style="text-decoration: none;">
+                    {% if comment.user_image %}
+                        <img src="templates/pictures/users/{{ comment.user_image }}" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%; margin-right: 10px; border: 1px solid #ddd;">
+                    {% else %}
+                        <div style="width: 35px; height: 35px; border-radius: 50%; background: #eee; display: inline-flex; align-items: center; justify-content: center; color: #666; font-weight: bold; font-size: 0.85em; margin-right: 10px; border: 1px solid #ddd;">
+                            {{ comment.user|slice(0, 1)|upper }}
+                        </div>
+                    {% endif %}
+                </a>
+                <a href="profile.php?id={{ comment.id_user }}" style="font-weight: bold; color: #007bff; text-decoration: none; font-size: 1.05em;">{{ comment.user }}</a>
+                <span class="text-muted" style="font-size: 0.85em; margin-left: 10px;">{{ comment.post_date|date("d.m.Y H:i") }}</span>
+            </div>
+
+            <p style="margin-top: 5px; margin-bottom: 10px; padding-left: 45px; color: #333;">{{ comment.content }}</p>
+
+            {% if comment.comment_image %}
+                <div style="margin-left: 45px; margin-bottom: 15px;">
+                    <img src="templates/pictures/comments/{{ comment.comment_image }}" style="max-height: 250px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+            {% endif %}
+
+            {% if user_name != '' %}
+                <button onclick="toggleReplyForm('{{ comment.id }}')" class="btn btn-sm btn-light" style="margin-left: 45px; font-size: 0.85em; border: 1px solid #ddd;">Răspunde</button>
+            {% endif %}
+
+            <div id="reply-form-{{ comment.id }}" style="display: none; margin-left: 45px; margin-top: 10px;">
+                <form action="show_article.php?id={{ article.id }}" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    <textarea name="content" rows="2" class="form-control mb-2" placeholder="Scrie răspunsul tău..." required></textarea>
+                    
+                    <div class="form-group mb-2">
+                        <input type="file" name="comment_image" class="form-control-file" style="font-size: 0.85em;" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm">Trimite răspunsul</button>
+                </form>
+            </div>
+
+            {% if comment.replies|length > 0 %}
+                <div class="mt-3" style="margin-left: 45px; border-left: 2px solid #007bff; padding-left: 15px;">
+                    {% for reply in comment.replies %}
+                        <div class="mb-3" style="background: #f4f6f9; padding: 10px; border-radius: 6px; position: relative;">
+                            <div class="d-flex align-items-center mb-1">
+                                <a href="profile.php?id={{ reply.id_user }}" style="text-decoration: none;">
+                                    {% if reply.user_image %}
+                                        <img src="templates/pictures/users/{{ reply.user_image }}" style="width: 28px; height: 28px; object-fit: cover; border-radius: 50%; margin-right: 8px; border: 1px solid #ddd;">
+                                    {% else %}
+                                        <div style="width: 28px; height: 28px; border-radius: 50%; background: #eee; display: inline-flex; align-items: center; justify-content: center; color: #666; font-weight: bold; font-size: 0.8em; margin-right: 8px; border: 1px solid #ddd;">
+                                            {{ reply.user|slice(0, 1)|upper }}
+                                        </div>
+                                    {% endif %}
+                                </a>
+                                
+                                <a href="profile.php?id={{ reply.id_user }}" style="font-weight: bold; color: #007bff; text-decoration: none; font-size: 0.95em;">{{ reply.user }}</a>
+                                <span class="text-muted" style="font-size: 0.8em; margin-left: 10px;">{{ reply.post_date|date("d.m.Y H:i") }}</span>
+                            </div>
+                            
+                            <p style="margin-bottom: 5px; font-size: 0.95em; color: #444;">{{ reply.content }}</p>
+
+                            {% if reply.comment_image %}
+                                <div class="mb-2">
+                                    <img src="templates/pictures/comments/{{ reply.comment_image }}" style="max-height: 150px; border-radius: 6px; border: 1px solid #ddd;">
+                                </div>
+                            {% endif %}
+
+                            {% if user_id == 1 or user_id == reply.id_user %}
+                                <a href="delete_comment.php?id={{ reply.id }}&article_id={{ article.id }}" onclick="return confirm('Ștergi acest răspuns?');" style="position: absolute; top: 10px; right: 10px; color: #dc3545;" title="Șterge">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if user_id == 1 or user_id == comment.id_user %}
+                <a href="delete_comment.php?id={{ comment.id }}&article_id={{ article.id }}" onclick="return confirm('Ștergi acest comentariu?');" style="position: absolute; top: 15px; right: 15px; color: #dc3545;" title="Șterge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                </a>
+            {% endif %}
+
+        </div>
+    {% else %}
+        <p class="text-muted">Nu există comentarii încă. Fii primul!</p>
+    {% endfor %}
+
+    <script>
+        function toggleReplyForm(commentId) {
+            var form = document.getElementById('reply-form-' + commentId);
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+    </div>
+
+    <div class="add-comment-box mt-4 p-4" style="background: #f1f5f8; border-radius: 8px;">
+        {% if user_name != '' %}
+            <h5>Lasă un comentariu</h5>
+            <form action="show_article.php?id={{ article.id }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                <div class="form-group">
+                    <textarea name="comment_content" rows="4" class="form-control" style="resize: vertical; border: 1px solid #ced4da;" placeholder="Scrie comentariul tău aici..." required></textarea>
+                </div>
+                
+                <div class="form-group mt-2 mb-3">
+                    <label class="text-muted small font-weight-bold d-block mb-1">Atașează o imagine (Opțional):</label>
+                    <input type="file" name="comment_image" class="form-control-file" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Trimite comentariul</button>
+            </form>
+        {% else %}
+            <p class="mb-0">Trebuie să fii <a href="login_form.php">autentificat</a> pentru a putea adăuga un comentariu.</p>
+        {% endif %}
+    </div>
+{% endblock %}

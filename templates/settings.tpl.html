@@ -1,0 +1,60 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm" style="border: none; border-radius: 8px;">
+        <div class="card-body" style="padding: 30px;">
+            <h2 class="card-title mb-4">Setări Profil</h2>
+            
+            {% if update_message != '' %}
+                <div class="alert alert-info">
+                    {{ update_message }}
+                </div>
+            {% endif %}
+
+            <form action="settings.php" method="POST" enctype="multipart/form-data">
+                
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3 text-center">
+                        {% if user_image and user_image|trim != '' and user_image != 'default.png' and user_image != 'default.jpg' and user_image != 'avatar.png' and user_image != 'user_image.jpg' %}
+                            <img src="templates/pictures/users/{{ user_image }}" alt="User Image" class="img-fluid rounded-circle mb-2" style="width: 150px; height: 150px; object-fit: cover; border: 2px solid #eee;">
+                        {% else %}
+                            <div style="width: 150px; height: 150px; border-radius: 50%; background: #ddd; display: inline-flex; align-items: center; justify-content: center; font-size: 5em; font-weight: bold; color: #666; margin-bottom: 8px; border: 2px solid #eee; margin-left: auto; margin-right: auto;">
+                                {{ user_name|slice(0, 1)|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <label for="user_image" style="font-weight: bold;">Schimbă poza de profil (Opțional):</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="user_image" name="user_image" accept="image/*">
+                            <label class="custom-file-label" for="user_image">Alege un fișier...</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="user_description" style="font-weight: bold;">Descriere Profil (Despre Mine):</label>
+                    <textarea class="form-control" name="user_description" id="user_description" rows="5" style="resize: vertical;">{{ user_description }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary px-4">Salvează Modificările</button>
+
+                <hr class="my-4">
+                <div class="p-3" style="background-color: #fff5f5; border: 1px solid #fecaca; border-radius: 8px;">
+                    <p class="text-muted small">Odată ce îți ștergi contul, toate articolele și comentariile tale vor fi eliminate definitiv din sistem fără posibilitatea de recuperare.</p>
+                    <a href="delete_own_account.php" class="btn btn-danger" onclick="return confirm('Ești absolut sigur că vrei să îți ștergi definitiv contul? Această acțiune este ireversibilă!');">Șterge Contul Meu</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>
+{% endblock %}

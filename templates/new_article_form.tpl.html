@@ -1,0 +1,63 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow" style="width: 100%; max-width: 900px; margin: 0 auto; border-radius: 12px; border: none;">
+        <div class="card-header bg-dark text-white" style="border-radius: 12px 12px 0 0; padding: 20px;">
+            <h3 class="mb-0">Scrie un articol nou</h3>
+        </div>
+        <div class="card-body" style="padding: 40px;">
+            
+            <form action="new_article.php" method="POST" enctype="multipart/form-data">
+                
+                <div class="form-group mb-4">
+                    <label for="id_gallery" style="font-weight: bold; font-size: 1.1em;">Orașul destinație:</label>
+                    <select name="id_gallery" id="id_gallery" class="form-control form-control-lg" required>
+                        <option value="">-- Alege orașul --</option>
+                        {% for gallery in result_galleries %}
+                            <option value="{{ gallery.id }}" {% if gallery.id == current_gallery_id %}selected{% endif %}>
+                                {{ gallery.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="title" style="font-weight: bold; font-size: 1.1em;">Titlul articolului:</label>
+                    <input type="text" class="form-control form-control-lg" name="title" id="title" placeholder="Ex: Top 5 cafenele ascunse..." style="width: 100%; max-width: 100%;" required>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="content" style="font-weight: bold; font-size: 1.1em;">Conținutul ghidului:</label>
+                    <textarea class="form-control form-control-lg" name="content" id="content" rows="10" placeholder="Împărtășește experiența ta de călătorie..." style="resize: vertical;" required></textarea>
+                </div>
+
+                <div class="form-group mb-5">
+                    <label style="font-weight: bold; font-size: 1.1em;">Adaugă imagini (Opțional):</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="article_images" name="article_images[]" accept="image/*" multiple>
+                        <label class="custom-file-label" for="article_images">Alege una sau mai multe imagini...</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" style="font-size: 1.2em; padding: 15px;">Publică Articolul</button>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var files = e.target.files;
+        var label = document.querySelector('.custom-file-label');
+        if(files.length > 1) {
+            label.textContent = files.length + " imagini selectate";
+        } else if (files.length === 1) {
+            label.textContent = files[0].name;
+        } else {
+            label.textContent = "Alege una sau mai multe imagini...";
+        }
+    });
+</script>
+{% endblock %}

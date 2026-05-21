@@ -1,0 +1,86 @@
+{% extends "base.tpl.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow" style="width: 100%; max-width: 900px; margin: 0 auto; border-radius: 12px; border: none;">
+        <div class="card-header bg-dark text-white" style="border-radius: 12px 12px 0 0; padding: 20px;">
+            <h3 class="mb-0">Editează ghidul tău</h3>
+        </div>
+        <div class="card-body" style="padding: 40px;">
+            
+            <form action="edit_article.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="article_id" value="{{ article.id }}">
+                
+                <div class="form-group mb-4">
+                    <label for="id_gallery" style="font-weight: bold; font-size: 1.1em;">Orașul destinație:</label>
+                    <select name="id_gallery" id="id_gallery" class="form-control form-control-lg" required>
+                        <option value="">-- Alege orașul --</option>
+                        {% for gallery in result_galleries %}
+                            <option value="{{ gallery.id }}" {% if gallery.id == article.id_gallery %}selected{% endif %}>
+                                {{ gallery.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="title" style="font-weight: bold; font-size: 1.1em;">Titlul articolului:</label>
+                    <input type="text" class="form-control form-control-lg" name="title" id="title" style="width: 100%; max-width: 100%;" value="{{ article.title }}" required>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="content" style="font-weight: bold; font-size: 1.1em;">Conținutul ghidului:</label>
+                    <textarea class="form-control form-control-lg" name="content" id="content" rows="10" style="resize: vertical;" required>{{ article.content }}</textarea>
+                </div>
+
+                {% if images is not empty %}
+                    <div class="form-group mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                        <label style="font-weight: bold; font-size: 1.1em; color: #000000;">Imagini existente (bifează pentru a șterge):</label>
+                        <div class="row mt-2">
+                            {% for img in images %}
+                                <div class="col-md-3 mb-3 text-center">
+                                    <div class="card p-2" style="border: 1px solid #ddd; background: #fff;">
+                                        <img src="templates/pictures/{{ img.picture }}" class="img-fluid mb-2" style="height: 100px; object-fit: cover; border-radius: 4px;">
+                                        <div>
+                                            <input type="checkbox" name="delete_images[]" value="{{ img.id }}" id="del_img_{{ img.id }}">
+                                            <label for="del_img_{{ img.id }}" class="text-danger mb-0" style="cursor:pointer; font-weight:bold; font-size: 0.9em;">Șterge</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="form-group mb-5">
+                    <label style="font-weight: bold; font-size: 1.1em;">Adaugă imagini noi (Opțional):</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="article_images" name="article_images[]" accept="image/*" multiple>
+                        <label class="custom-file-label" for="article_images">Alege una sau mai multe imagini...</label>
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <a href="manage_galleries.php" class="btn btn-secondary btn-lg mr-3" style="font-size: 1.2em; padding: 15px;">Anulează</a>
+                    <button type="submit" class="btn btn-warning btn-lg flex-grow-1" style="font-size: 1.2em; padding: 15px; font-weight: bold;">Salvează Modificările</button>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var files = e.target.files;
+        var label = document.querySelector('.custom-file-label');
+        if(files.length > 1) {
+            label.textContent = files.length + " imagini noi selectate";
+        } else if (files.length === 1) {
+            label.textContent = files[0].name;
+        } else {
+            label.textContent = "Alege una sau mai multe imagini...";
+        }
+    });
+</script>
+{% endblock %}
