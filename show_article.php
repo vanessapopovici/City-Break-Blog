@@ -17,20 +17,17 @@
 	require_once 'vendor/autoload.php';
 	require 'db.php';
 
-	// 1. GESTIONARE ADAUGARE COMENTARIU NOU SAU RĂSPUNS (POST)
+	//gestionarea adaugarii unui comentariu nou sau a unui raspuns la un comentariu existent
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		// Preluăm conținutul
 		$raw_content = isset($_POST['comment_content']) ? $_POST['comment_content'] : (isset($_POST['content']) ? $_POST['content'] : '');
 		$content = htmlspecialchars(stripslashes(trim($raw_content)));
 		
 		if(!empty($content) && $_SESSION['uid'] > 0) {
 			$parent_id = (isset($_POST['parent_id']) && !empty($_POST['parent_id'])) ? intval($_POST['parent_id']) : null;
 			
-			// --- LOGICA PENTRU UPLOAD IMAGINE ---
 			$comment_image = null;
 			if (isset($_FILES['comment_image']) && $_FILES['comment_image']['error'] == UPLOAD_ERR_OK) {
 				$upload_dir = 'templates/pictures/comments/';
-				// Creăm folderul automat dacă ai uitat la Pasul 2
 				if (!is_dir($upload_dir)) {
 					mkdir($upload_dir, 0777, true);
 				}
@@ -38,14 +35,11 @@
 				$comment_image = $_SESSION['uid'] . '_' . time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "_", $original_name);
 				move_uploaded_file($_FILES['comment_image']['tmp_name'], $upload_dir . $comment_image);
 			}
-            // ------------------------------------
 			
 			if ($parent_id) {
-				// Inserăm ca răspuns (cu imagine)
 				$stmt = $conn->prepare("INSERT INTO comments (id_article, id_user, content, parent_id, comment_image) VALUES (?, ?, ?, ?, ?)");
 				$stmt->bind_param("iisis", $article_id, $_SESSION['uid'], $content, $parent_id, $comment_image);
 			} else {
-				// Inserăm ca și comentariu principal (cu imagine)
 				$stmt = $conn->prepare("INSERT INTO comments (id_article, id_user, content, comment_image) VALUES (?, ?, ?, ?)");
 				$stmt->bind_param("iiss", $article_id, $_SESSION['uid'], $content, $comment_image);
 			}
@@ -61,7 +55,7 @@
 	$loader = new \Twig\Loader\FilesystemLoader('templates');
 	$twig = new \Twig\Environment($loader);
 
-	// 2. EXTRAGERE DETALII ARTICOL
+	//extragerea detaliilor articolului
 	$stmt = $conn->prepare("SELECT a.*, u.user FROM articles a JOIN users u ON a.id_user = u.id WHERE a.id = ?");
 	$stmt->bind_param("i", $article_id);
 	$stmt->execute();
@@ -74,7 +68,7 @@
 		exit;
 	}
 
-	// 3. EXTRAGERE IMAGINI ARTICOL
+	//extragerea imaginilor articolului
 	$article_images = [];
 	$check_table = $conn->query("SHOW TABLES LIKE 'article_pictures'");
 	if($check_table->num_rows > 0) {
@@ -88,7 +82,7 @@
 		$img_stmt->close();
 	}
 
-	// 4. EXTRAGERE COMENTARII ȘI ORGANIZARE IERARHICĂ
+	//extragere comentarii
 	$comments_result = $conn->query(
 		"SELECT c.*, u.user, u.user_image FROM comments c 
 		JOIN users u ON c.id_user = u.id 
@@ -97,24 +91,24 @@
 	);
 	
 	$all_comments = [];
-	$main_comments = []; // Comentariile principale (fără părinte)
-	$replies = []; // Răspunsurile
+	$main_comments = [];
+	$replies = [];
 
 	while($com = $comments_result->fetch_assoc()){
-		$com['replies'] = []; // Pregătim un array gol pentru potențialele răspunsuri
+		$com['replies'] = [];
 		$all_comments[] = $com;
 	}
 
-	// Separăm comentariile principale de răspunsuri
+	//separarea comentariilor principale de răspunsuri
 	foreach ($all_comments as $c) {
 		if ($c['parent_id'] == null) {
-			$main_comments[$c['id']] = $c; // Setăm ID-ul ca și cheie pentru a fi ușor de găsit
+			$main_comments[$c['id']] = $c;
 		} else {
 			$replies[] = $c;
 		}
 	}
 
-	// Atașăm răspunsurile la comentariile părinte corespunzătoare
+	//atasarea rasounsurilor la comentariile principale
 	foreach ($replies as $r) {
 		$pid = $r['parent_id'];
 		if (isset($main_comments[$pid])) {
@@ -122,10 +116,8 @@
 		}
 	}
 
-	// Transformăm array-ul înapoi într-o formă simplă pentru Twig (eliminăm cheile custom)
 	$comments = array_values($main_comments);
 
-	// 5. RENDEREA ÎN INTERFAȚĂ
 	echo $twig->render('show_article.tpl.html', [
 		'pagetitle' => $article['title'],
 		'article' => $article,

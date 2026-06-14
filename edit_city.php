@@ -14,12 +14,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title_desc = htmlspecialchars(stripslashes(trim($_POST['title_description'])));
     $long_desc = htmlspecialchars(stripslashes(trim($_POST['long_description'])));
     
-    // Verificăm dacă utilizatorul a bifat căsuța de ștergere a imaginii
     $delete_image = isset($_POST['delete_image']) ? intval($_POST['delete_image']) : 0;
 
     if(!empty($title) && !empty($title_desc) && $id > 0) {
         
-        // Cazul 1: Adminul a încărcat o imagine NOUĂ (se suprascrie orice ar fi fost înainte)
         if(isset($_FILES['gallery_image']) && $_FILES['gallery_image']['error'] == UPLOAD_ERR_OK) {
             
             $upload_dir = 'templates/pictures/';
@@ -35,14 +33,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             
         } else {
-            // Cazul 2: Nu s-a încărcat o imagine nouă, dar s-a bifat "Șterge imaginea curentă"
             if ($delete_image == 1) {
                 $stmt = $conn->prepare("UPDATE galleries SET title=?, title_description=?, long_description=?, img='' WHERE id=?");
                 $stmt->bind_param("sssi", $title, $title_desc, $long_desc, $id);
                 $stmt->execute();
                 $stmt->close();
-                
-            // Cazul 3: Nu s-a încărcat imagine nouă și nici nu s-a bifat ștergerea (se păstrează datele vechi)
             } else {
                 $stmt = $conn->prepare("UPDATE galleries SET title=?, title_description=?, long_description=? WHERE id=?");
                 $stmt->bind_param("sssi", $title, $title_desc, $long_desc, $id);
@@ -50,8 +45,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->close();
             }
         }
-        
-        // Ne întoarcem pe pagina de gestionare a orașelor
         header("Location: manage_cities.php");
         exit;
     }

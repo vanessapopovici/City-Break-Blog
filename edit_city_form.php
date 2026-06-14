@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Verificare admin
 if(!isset($_SESSION['uname']) || $_SESSION['uname']=='' || $_SESSION['uid'] != 1){
     header("Location: index.php");
     exit;
@@ -17,7 +16,6 @@ if ($id <= 0) {
     exit;
 }
 
-// Extragem datele actuale ale orașului
 $stmt = $conn->prepare("SELECT * FROM galleries WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();

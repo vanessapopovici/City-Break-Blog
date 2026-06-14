@@ -12,9 +12,7 @@
 	$pagetitle = 'Manage My Articles';
 	
 	$uid = intval($_SESSION['uid']);
-	
-	// Dacă este Admin (user_id = 1), vede toate articolele. 
-	// Dacă este user normal, vede doar articolele lui.
+
 	if($uid != 1) {
 		$sql = "SELECT a.*, g.title as gallery_title FROM articles a LEFT JOIN galleries g ON a.id_gallery = g.id WHERE a.id_user = $uid ORDER BY a.post_date DESC";
 	} else {

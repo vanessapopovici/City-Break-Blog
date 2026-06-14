@@ -2,35 +2,29 @@
 session_start();
 require 'db.php';
 
-// Ne asigurăm totuși că vizitatorul este logat pentru a vedea profiluri
 if (!isset($_SESSION['uname']) || $_SESSION['uname'] == '') {
     header("Location: login_form.php");
     exit;
 }
 
-// Dacă există ?id=X în URL, afișăm acel utilizator, altfel afișăm utilizatorul logat curent
 $user_id = isset($_GET['id']) ? intval($_GET['id']) : intval($_SESSION['uid']);
 
-// 1. Preluăm detaliile utilizatorului solicitat
 $stmt = $conn->prepare("SELECT id, user, user_image, user_short_description FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_data = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
-// Dacă user-ul nu există în baza de date
 if (!$user_data) {
     die("Utilizatorul solicitat nu există.");
 }
 
-// 2. Extragem toate articolele scrise de ACEST utilizator
 $stmt = $conn->prepare("SELECT id, title, content, post_date FROM articles WHERE id_user = ? ORDER BY post_date DESC");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_articles = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// 3. Extragem toate comentariile scrise de el + Titlul articolului
 $stmt = $conn->prepare("
     SELECT c.id, c.content, c.post_date, c.id_article, a.title AS article_title 
     FROM comments c 

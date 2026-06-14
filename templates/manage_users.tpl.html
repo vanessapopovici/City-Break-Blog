@@ -9,29 +9,37 @@
             <table class="table table-hover align-middle mb-0" style="min-width: 600px;">
                 <thead class="bg-dark text-white">
                     <tr>
-                        <th style="width: 80px; padding: 15px;">Avatar</th>
-                        <th>Nume Utilizator</th>
-                        <th>Descriere Scurtă</th>
-                        <th class="text-center" style="width: 120px;">Acțiuni</th>
+                        <th style="width: 90px; text-align: center; vertical-align: middle;">Avatar</th>
+                        <th style="text-align: left; vertical-align: middle;">Nume Utilizator</th>
+                        <th style="text-align: center; vertical-align: middle;">Descriere Scurtă</th>
+                        <th style="width: 120px; text-align: center; vertical-align: middle;">Acțiuni</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for u in result_users %}
                         <tr>
-                            <td style="padding: 12px;">
-                                {% if u.user_image and u.user_image|trim != '' and u.user_image != 'user_image.jpg' %}
-                                    <img src="templates/pictures/users/{{ u.user_image }}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd; display: block; margin: auto;">
-                                {% else %}
-                                    <div style="width: 45px; height: 45px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #777; font-weight: bold; font-size: 1.2em; margin: auto;">
-                                        {{ u.user|slice(0, 1)|upper }}
-                                    </div>
-                                {% endif %}
+                            <td style="text-align: center; vertical-align: middle; padding: 12px;">
+                                <a href="profile.php?id={{ u.id }}" style="text-decoration: none;">
+                                    {% if u.user_image and u.user_image|trim != '' and u.user_image != 'user_image.jpg' %}
+                                        <img src="templates/pictures/users/{{ u.user_image }}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 1px solid #ddd; display: block; margin: auto;">
+                                    {% else %}
+                                        <div style="width: 45px; height: 45px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #777; font-weight: bold; font-size: 1.2em; margin: auto;">
+                                            {{ u.user|slice(0, 1)|upper }}
+                                        </div>
+                                    {% endif %}
+                                </a>
                             </td>
-                            <td style="font-weight: 500; font-size: 1.1em; color: #333;">{{ u.user }}</td>
-                            <td class="text-muted" style="font-size: 0.95em;">
+                            
+                            <td style="text-align: left; vertical-align: middle; font-weight: 500; font-size: 1.1em;">
+                                <a href="profile.php?id={{ u.id }}" style="color: #007bff; text-decoration: none;">
+                                    {{ u.user }}
+                                </a>
+                            </td>
+                            
+                            <td class="text-muted" style="text-align: center; vertical-align: middle; font-size: 0.95em;">
                                 {{ u.user_short_description ? u.user_short_description : '---' }}
                             </td>
-                            <td class="text-center">
+                            <td style="text-align: center; vertical-align: middle;">
                                 <a href="delete_user.php?id={{ u.id }}" class="btn btn-sm btn-danger" style="border-radius: 4px; font-weight: 500;" onclick="return confirm('Ești sigur că vrei să ștergi definitiv acest utilizator? Toate articolele și comentariile lui vor fi șterse AUTOMAT!');">
                                     Șterge
                                 </a>
@@ -39,7 +47,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="4" class="text-center text-muted p-4">
+                            <td colspan="4" style="text-align: center; vertical-align: middle;" class="text-muted p-4">
                                 Nu există alți utilizatori înregistrați în sistem.
                             </td>
                         </tr>

@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Securitate: Verificăm dacă este logat și dacă este Admin (ID = 1)
 if(!isset($_SESSION['uname']) || $_SESSION['uname']=='' || $_SESSION['uid'] != 1){
     header("Location: index.php");
     exit;

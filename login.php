@@ -13,10 +13,10 @@
 		$_SESSION['uname'] = $loginuser;
 		$_SESSION['uid'] = $row['id'];
 		
-		// Dacă are poză setată o folosim pe aia, altfel punem 'user_image.jpg'
+		//daca nu are poza setata, punem una default
 		$_SESSION['uimage'] = !empty($row['user_image']) ? $row['user_image'] : 'user_image.jpg';
 		
-		// Bonus: Punem și o descriere default simpatică dacă profilul e gol!
+		//descriere default
 		$_SESSION['udescription'] = !empty($row['user_short_description']) ? $row['user_short_description'] : 'Salut! Sunt un explorator nou pe City Break Guide.';
 		
 		Header("Location:index.php");

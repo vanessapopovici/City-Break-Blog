@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Securitate: doar Adminul are voie aici
 if(!isset($_SESSION['uname']) || $_SESSION['uname']=='' || $_SESSION['uid'] != 1){
     header("Location: index.php");
     exit;
@@ -14,7 +13,6 @@ $loader = new \Twig\Loader\FilesystemLoader('templates');
 $twig = new \Twig\Environment($loader);
 $pagetitle = 'Gestionare Utilizatori';
 
-// Extragem utilizatorii, mai puțin adminul (id = 1)
 $sql = "SELECT id, user, user_image, user_short_description FROM users WHERE id != 1 ORDER BY id DESC";
 $result_users = $conn->query($sql);
 

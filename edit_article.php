@@ -10,14 +10,12 @@ require 'db.php';
 
 $user_id = intval($_SESSION['uid']);
 
-// 1. POST - ACTUALIZAREA DATELOR ȘI IMAGINILOR
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $article_id = intval($_POST['article_id']);
     $title = htmlspecialchars(stripslashes(trim($_POST['title'])));
     $content = htmlspecialchars(stripslashes(trim($_POST['content'])));
     $id_gallery = intval($_POST['id_gallery']);
 
-    // Verificăm permisiunile
     $stmt = $conn->prepare("SELECT id_user FROM articles WHERE id = ?");
     $stmt->bind_param("i", $article_id);
     $stmt->execute();
@@ -25,32 +23,29 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->close();
 
     if($article && ($article['id_user'] == $user_id || $user_id == 1)) {
-        
-        // A. Actualizăm textul articolului
+        //actualizam textul articolului
         $upd_stmt = $conn->prepare("UPDATE articles SET id_gallery = ?, title = ?, content = ? WHERE id = ?");
         $upd_stmt->bind_param("issi", $id_gallery, $title, $content, $article_id);
         $upd_stmt->execute();
         $upd_stmt->close();
         
-        // B. Ștergerea imaginilor selectate (dacă utilizatorul a bifat vreuna)
+        //stergem imaginile selectate
         if(isset($_POST['delete_images']) && is_array($_POST['delete_images'])) {
             foreach($_POST['delete_images'] as $img_id) {
                 $img_id = intval($img_id);
-                // Extragem numele imaginii pentru a o șterge fizic din folder
                 $get_img = $conn->query("SELECT picture FROM article_pictures WHERE id = $img_id AND id_article = $article_id");
                 if($get_img && $get_img->num_rows > 0) {
                     $res = $get_img->fetch_assoc();
                     $filepath = 'templates/pictures/' . $res['picture'];
                     if(file_exists($filepath)) {
-                        unlink($filepath); // Șterge din folder
+                        unlink($filepath);
                     }
-                    // Șterge din baza de date
                     $conn->query("DELETE FROM article_pictures WHERE id = $img_id");
                 }
             }
         }
 
-        // C. Adăugarea de imagini noi (la fel ca la crearea articolului)
+        //adaugam imagini noi
         if(isset($_FILES['article_images']) && !empty($_FILES['article_images']['name'][0])) {
             $upload_dir = 'templates/pictures/';
             foreach($_FILES['article_images']['tmp_name'] as $key => $tmp_name) {
@@ -75,7 +70,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// 2. GET - AFIȘAREA FORMULARULUI DE EDITARE
+//fromular de editare
 if(!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: manage_galleries.php");
     exit;
@@ -93,7 +88,6 @@ if(!$article || ($article['id_user'] != $user_id && $user_id != 1)) {
     exit;
 }
 
-// Extragem imaginile existente ale articolului
 $article_images = [];
 $check_table = $conn->query("SHOW TABLES LIKE 'article_pictures'");
 if($check_table->num_rows > 0) {

@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Verificăm dacă utilizatorul este logat și dacă este Admin (ID = 1)
 if(!isset($_SESSION['uname']) || $_SESSION['uname']=='' || $_SESSION['uid'] != 1){
     header("Location: index.php");
     exit;
@@ -14,13 +13,12 @@ $loader = new \Twig\Loader\FilesystemLoader('templates');
 $twig = new \Twig\Environment($loader);
 $pagetitle = 'Toate Orașele';
 
-// Extragem toate orașele (galeriile) din baza de date
 $sql = "SELECT id, title, title_description FROM galleries ORDER BY id DESC";
 $result_cities = $conn->query($sql);
 
 echo $twig->render('manage_cities.tpl.html', [
     'pagetitle' => $pagetitle,
-    'active_page' => 'manage_cities', // Folosit pentru a colora tab-ul activ
+    'active_page' => 'manage_cities',
     'result_cities' => $result_cities,
     'user_name' => $_SESSION['uname'],
     'user_id' => $_SESSION['uid'],
